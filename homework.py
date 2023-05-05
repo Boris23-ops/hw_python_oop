@@ -5,11 +5,11 @@ from dataclasses import dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
     def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float,
+                 training_type: str,  # Тип тренировки
+                 duration: float,  # Длительность
+                 distance: float,  # Дистанция
+                 speed: float,  # Ср. скорость
+                 calories: float,  # Потрачено ккал
                  ) -> None:
         self.training_type = training_type
         self.distance = distance
@@ -30,7 +30,7 @@ class Training:
     """Базовый класс тренировки."""
     LEN_STEP: float = 0.65
     M_IN_KM: int = 1000
-    KON1: int = 60
+    MIN_IN_H: int = 60
 
     def __init__(self,
                  action: int,
@@ -62,23 +62,23 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
-    CALORIES_MEAN_SPEED_MULTIPLIER = 18
-    CALORIES_MEAN_SPEED_SHIFT = 1.79
+    CALORIES_MEAN_SPEED_MULTIPLIER: float = 18
+    CALORIES_MEAN_SPEED_SHIFT: float = 1.79
 
     def get_spent_calories(self) -> float:
         return ((self.CALORIES_MEAN_SPEED_MULTIPLIER
                 * self.get_mean_speed()
                 + self.CALORIES_MEAN_SPEED_SHIFT)
-                * self.weight / self.M_IN_KM * self.duration * self.KON1)
+                * self.weight / self.M_IN_KM * self.duration * self.MIN_IN_H)
 
 
 @dataclass
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    K_1 = 0.035
-    K_2 = 0.029
-    k_3 = 0.278
-    k_4 = 100
+    K_WLK_1: float = 0.035
+    K_WLK_2: float = 0.029
+    KMH_IN_MSEC: float = 0.278
+    CM_IN_M: float = 100
 
     def __init__(self,
                  action: int,
@@ -89,17 +89,18 @@ class SportsWalking(Training):
         self.height = height
 
     def get_spent_calories(self) -> float:
-        return ((self.K_1 * self.weight
-                + (self.get_mean_speed()**2 / self.height)
-                * self.K_2 * self.weight) * self.duration * self.KON1)
+        return ((self.K_WLK_1 * self.weight
+                + ((self.get_mean_speed() * self.KMH_IN_MSEC)**2
+                 / (self.height / self.CM_IN_M))
+                * self.K_WLK_2 * self.weight) * self.duration * self.MIN_IN_H)
 
 
 @dataclass
 class Swimming(Training):
     """Тренировка: плавание."""
-    K_SW_1 = 1.1
-    K_SW_2 = 2
-    LEN_STEP = 1.38
+    K_SW_1: float = 1.1
+    K_SW_2: float = 2
+    LEN_STEP: float = 1.38
 
     def __init__(self,
                  action: int,
