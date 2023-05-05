@@ -88,8 +88,8 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
-    K_WLK_1: ClassVar[float] = 0.035
-    K_WLK_2: ClassVar[float] = 0.029
+    CALORIES_WEIGHT_MULTIPLIER: ClassVar[float] = 0.035
+    CALORIES_SPEED_HEIGHT_MULTIPLIER: ClassVar[float] = 0.029
     KMH_IN_MSEC: ClassVar[float] = 0.278
     CM_IN_M: ClassVar[float] = 100
     SQUARE: ClassVar[float] = 2
@@ -102,7 +102,7 @@ class SportsWalking(Training):
     def get_spent_calories(self) -> float:
         return (
             (
-                self.K_WLK_1
+                self.CALORIES_WEIGHT_MULTIPLIER
                 * self.weight
                 + (
                     (self.get_mean_speed()
@@ -111,7 +111,7 @@ class SportsWalking(Training):
                     / (self.height
                        / self.CM_IN_M
                        )
-                ) * self.K_WLK_2
+                ) * self.CALORIES_SPEED_HEIGHT_MULTIPLIER
                   * self.weight
             )
             * self.duration
