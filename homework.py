@@ -102,7 +102,7 @@ class SportsWalking(Training):
     def get_spent_calories(self) -> float:
         return (
             (
-                self.K_WLK_1 
+                self.K_WLK_1
                 * self.weight
                 + (
                     (self.get_mean_speed()
@@ -153,7 +153,7 @@ def read_package(workout_type: str, data: list) -> Training:
         'WLK': SportsWalking
     }
     if workout_type not in type_dict:
-        return ValueError(f"Такой тренировки - {workout_type}, не найдено")
+        raise ValueError(f"Такой тренировки - {workout_type}, не найдено")
     return type_dict[workout_type](*data)
 
 
