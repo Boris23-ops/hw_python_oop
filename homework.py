@@ -11,7 +11,7 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
-    message: str = (
+    MESSAGE: str = (
         'Тип тренировки: {training_type}; '
         'Длительность: {duration:.3f} ч.; '
         'Дистанция: {distance:.3f} км; '
@@ -21,21 +21,20 @@ class InfoMessage:
 
     def get_message(self) -> str:
         """Метод возвращает строку сообщения"""
-
-        return (self.message.format(**asdict(self)))
+        return (self.MESSAGE.format(**asdict(self)))
 
 
 @dataclass
 class Training:
     """Базовый класс тренировки."""
 
-    LEN_STEP: ClassVar[float] = 0.65
-    M_IN_KM: ClassVar[float] = 1000
-    MIN_IN_H: ClassVar[float] = 60
-
     action: int
     duration: float
     weight: float
+
+    LEN_STEP: ClassVar[float] = 0.65
+    M_IN_KM: ClassVar[float] = 1000
+    MIN_IN_H: ClassVar[float] = 60
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -50,7 +49,8 @@ class Training:
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
 
-        raise NotImplementedError("Требуется определить get_spent_calories()")
+        raise NotImplementedError(f'Требуется определить'
+                                  f'{self.get_spent_calories()}')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -71,6 +71,7 @@ class Running(Training):
     CALORIES_MEAN_SPEED_SHIFT: ClassVar[float] = 1.79
 
     def get_spent_calories(self) -> float:
+        """Получить количество затраченных калорий."""
         return (
             (
                 self.CALORIES_MEAN_SPEED_MULTIPLIER
@@ -88,18 +89,16 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
+    height: int
+
     CALORIES_WEIGHT_MULTIPLIER: ClassVar[float] = 0.035
     CALORIES_SPEED_HEIGHT_MULTIPLIER: ClassVar[float] = 0.029
     KMH_IN_MSEC: ClassVar[float] = 0.278
     CM_IN_M: ClassVar[float] = 100
     SQUARE: ClassVar[float] = 2
 
-    action: int
-    duration: float
-    weight: float
-    height: int
-
     def get_spent_calories(self) -> float:
+        """Получить количество затраченных калорий."""
         return (
             (
                 self.CALORIES_WEIGHT_MULTIPLIER
@@ -107,12 +106,15 @@ class SportsWalking(Training):
                 + (
                     (self.get_mean_speed()
                      * self.KMH_IN_MSEC
-                     ) ** self.SQUARE
-                    / (self.height
-                       / self.CM_IN_M
-                       )
-                ) * self.CALORIES_SPEED_HEIGHT_MULTIPLIER
-                  * self.weight
+                     )
+                    ** self.SQUARE
+                    / (
+                        self.height
+                        / self.CM_IN_M
+                    )
+                )
+                * self.CALORIES_SPEED_HEIGHT_MULTIPLIER
+                * self.weight
             )
             * self.duration
             * self.MIN_IN_H
@@ -123,38 +125,34 @@ class SportsWalking(Training):
 class Swimming(Training):
     """Тренировка: плавание."""
 
-    K_SW_1: ClassVar[float] = 1.1
-    K_SW_2: ClassVar[float] = 2
-    LEN_STEP: ClassVar[float] = 1.38
-
-    action: int
-    duration: float
-    weight: float
     length_pool: int
     count_pool: int
-    length_pool = float
-    count_pool = float
+
+    CALORIES_MEAN_SPEED_SHIFT: ClassVar[float] = 1.1
+    CALORIES_WEIGHT_MULTIPLIER: ClassVar[float] = 2
+    LEN_STEP: ClassVar[float] = 1.38
 
     def get_mean_speed(self) -> float:
         return (self.length_pool * self.count_pool
                 / self.M_IN_KM / self.duration)
 
     def get_spent_calories(self) -> float:
-        return ((self.get_mean_speed() + self.K_SW_1) * self.K_SW_2
+        return ((self.get_mean_speed() + self.CALORIES_MEAN_SPEED_SHIFT)
+                * self.CALORIES_WEIGHT_MULTIPLIER
                 * self.weight * self.duration)
 
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
 
-    type_dict: dict[str, type[Training]] = {
+    TYPES_OF_TRAINING: dict[str, type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
-    if workout_type not in type_dict:
+    if workout_type not in TYPES_OF_TRAINING:
         raise ValueError(f"Такой тренировки - {workout_type}, не найдено")
-    return type_dict[workout_type](*data)
+    return TYPES_OF_TRAINING[workout_type](*data)
 
 
 def main(training: Training) -> None:
@@ -171,5 +169,4 @@ if __name__ == '__main__':
     ]
 
     for workout_type, data in packages:
-        training = read_package(workout_type, data)
-        main(training)
+        main(read_package(workout_type, data))
