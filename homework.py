@@ -56,7 +56,7 @@ class Training:
         """Вернуть информационное сообщение о выполненной тренировке."""
 
         return InfoMessage(
-            self.__class__.__name__,
+            type(self).__name__,
             self.duration,
             self.get_distance(),
             self.get_mean_speed(),
@@ -91,9 +91,12 @@ class SportsWalking(Training):
 
     height: int
 
+    M_IN_KM: ClassVar[float] = 1000
+    MIN_IN_H: ClassVar[float] = 60
+    MIN_IN_C: ClassVar[float] = 60
     CALORIES_WEIGHT_MULTIPLIER: ClassVar[float] = 0.035
     CALORIES_SPEED_HEIGHT_MULTIPLIER: ClassVar[float] = 0.029
-    KMH_IN_MSEC: ClassVar[float] = 0.278
+    KMH_IN_MSEC: ClassVar[float] = (M_IN_KM / (MIN_IN_H * MIN_IN_C))
     CM_IN_M: ClassVar[float] = 100
     SQUARE: ClassVar[float] = 2
 
