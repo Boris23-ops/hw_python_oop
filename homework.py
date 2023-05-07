@@ -38,23 +38,20 @@ class Training:
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
-
         return self.action * self.LEN_STEP / self.M_IN_KM
 
     def get_mean_speed(self) -> float:
         """Получить среднюю скорость движения."""
-
         return self.get_distance() / self.duration
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-
-        raise NotImplementedError(f'Требуется определить'
-                                  f'{self.get_spent_calories()}')
+        raise NotImplementedError('Метод get_spent_calories не '
+                                  'переопределён в классе '
+                                  f'{type(self).__name__}.')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
-
         return InfoMessage(
             type(self).__name__,
             self.duration,
@@ -91,14 +88,13 @@ class SportsWalking(Training):
 
     height: int
 
-    M_IN_KM: ClassVar[float] = 1000
-    MIN_IN_H: ClassVar[float] = 60
     MIN_IN_C: ClassVar[float] = 60
     CALORIES_WEIGHT_MULTIPLIER: ClassVar[float] = 0.035
     CALORIES_SPEED_HEIGHT_MULTIPLIER: ClassVar[float] = 0.029
     CM_IN_M: ClassVar[float] = 100
     SQUARE: ClassVar[float] = 2
-    KMH_IN_MSEC: ClassVar[float] = round((M_IN_KM / (MIN_IN_H * MIN_IN_C)), 3)
+    KMH_IN_MSEC: ClassVar[float] = round(Training.M_IN_KM
+                                         / (Training.MIN_IN_H * MIN_IN_C), 3)
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
@@ -160,7 +156,6 @@ def read_package(workout_type: str, data: list) -> Training:
 
 def main(training: Training) -> None:
     """Главная функция."""
-
     print(training.show_training_info().get_message())
 
 
