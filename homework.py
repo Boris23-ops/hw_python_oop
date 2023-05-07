@@ -96,9 +96,9 @@ class SportsWalking(Training):
     MIN_IN_C: ClassVar[float] = 60
     CALORIES_WEIGHT_MULTIPLIER: ClassVar[float] = 0.035
     CALORIES_SPEED_HEIGHT_MULTIPLIER: ClassVar[float] = 0.029
-    KMH_IN_MSEC: ClassVar[float] = (M_IN_KM / (MIN_IN_H * MIN_IN_C))
     CM_IN_M: ClassVar[float] = 100
     SQUARE: ClassVar[float] = 2
+    KMH_IN_MSEC: ClassVar[float] = round(M_IN_KM / (MIN_IN_H * MIN_IN_C))
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
